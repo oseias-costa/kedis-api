@@ -1,7 +1,8 @@
-package http
+package repository
 
 import (
 	"encoding/json"
+	"fmt"
 	"main/usecases"
 	"net/http"
 
@@ -10,18 +11,19 @@ import (
 
 var useCases = usecases.NewUserUseCase()
 
-type UserHTPP interface {
+type UserRepository interface {
 	GetUserByID(w http.ResponseWriter, r *http.Request)
 }
 
-type userHttp struct{}
+type userRepository struct{}
 
-func NewUserHttp() UserHTPP {
-	return &userHttp{}
+func NewUserRepository() UserRepository {
+	return &userRepository{}
 }
 
-func (*userHttp) GetUserByID(w http.ResponseWriter, r *http.Request) {
+func (*userRepository) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
+	fmt.Println("id is:", id)
 	user, err := useCases.GetUser(id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
