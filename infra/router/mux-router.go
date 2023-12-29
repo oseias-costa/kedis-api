@@ -17,7 +17,7 @@ func NewMuxRouter() Router {
 
 func (*muxRouter) SERVE(port string) {
 	fmt.Printf("Listen and Serve on port %s\n", port)
-	http.ListenAndServe(port, nil)
+	http.ListenAndServe(port, muxDispatcher)
 }
 
 func (*muxRouter) GET(path string, handler func(http.ResponseWriter, *http.Request)) {
