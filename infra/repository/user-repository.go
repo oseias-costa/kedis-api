@@ -1,35 +1,51 @@
 package repository
 
 import (
-	"encoding/json"
-	"fmt"
+	"errors"
+	"main/entities"
 	"main/usecases"
-	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
-var useCases = usecases.NewUserUseCase()
+var userUseCases usecases.UserUseCase
+
+var users = []entities.User{
+	{
+		ID:        "1",
+		FirstName: "Oséias",
+		LastName:  "Costa",
+		Age:       32,
+		Password:  "12345",
+	},
+	{
+		ID:        "2",
+		FirstName: "Rangel",
+		LastName:  "Amilton Costa",
+		Age:       35,
+		Password:  "54312",
+	},
+}
 
 type UserRepository interface {
-	GetUserByID(w http.ResponseWriter, r *http.Request)
+	GetUser(id string) (entities.User, error)
 }
 
 type userRepository struct{}
 
-func NewUserRepository() UserRepository {
+func NewUserRepository(usecase usecases.UserUseCase) UserRepository {
+	userUseCases = usecase
 	return &userRepository{}
 }
 
-func (*userRepository) GetUserByID(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	fmt.Println("id is:", id)
-	user, err := useCases.GetUser(id)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("User not exists"))
-		return
+func (*userRepository) GetUser(id string) (entities.User, error) {
+	for _, user := range users {
+		if user.ID == id {
+			verifyUser, err := userUseCases.GetUserUseCase(user)
+			if err != nil {
+				return user, err
+			}
+			return *verifyUser, nil
+		}
 	}
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
+
+	return entities.User{}, errors.New("User not exist")
 }
