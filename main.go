@@ -5,17 +5,21 @@ import (
 	"fmt"
 	"main/infra/repository"
 	"main/infra/router"
+	"main/presentation/controller"
+	"main/usecases"
 	"net/http"
 )
 
 var httpRouter = router.NewMuxRouter()
-var userRoutes = repository.NewUserRepository()
+var userUseCase = usecases.NewUserUseCase()
+var userRepository = repository.NewUserRepository(userUseCase)
+var userController = controller.NewUserController(userRepository)
 
 func main() {
 	fmt.Println("Hello, World!")
 	httpRouter.GET("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"message": "Hello World"}`))
 	})
-	httpRouter.GET("/user/{id}", userRoutes.GetUserByID)
+	httpRouter.GET("/user/{id}", userController.GetUserByID)
 	httpRouter.SERVE(":8100")
 }
