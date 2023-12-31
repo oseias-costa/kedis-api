@@ -2,8 +2,10 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"main/entities"
 	"main/usecases"
+	"math/rand"
 )
 
 var userUseCases usecases.UserUseCase
@@ -27,6 +29,7 @@ var users = []entities.User{
 
 type UserRepository interface {
 	GetUser(id string) (entities.User, error)
+	CreateUser(user entities.User) (entities.User, error)
 }
 
 type userRepository struct{}
@@ -48,4 +51,14 @@ func (*userRepository) GetUser(id string) (entities.User, error) {
 	}
 
 	return entities.User{}, errors.New("User not exist")
+}
+
+func (*userRepository) CreateUser(user entities.User) (entities.User, error) {
+	user.ID = fmt.Sprint(rand.Intn(10000))
+	newUser, err := userUseCases.CreateUserUseCase(&user)
+	if err != nil {
+		return user, errors.New("Error at create user")
+	}
+	users = append(users, newUser)
+	return newUser, nil
 }
