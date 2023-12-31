@@ -21,5 +21,6 @@ func main() {
 		w.Write([]byte(`{"message": "Hello World"}`))
 	})
 	httpRouter.GET("/user/{id}", userController.GetUserByID)
+	httpRouter.POST("/user/", userController.CreateNewUser)
 	httpRouter.SERVE(":8100")
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type UserUseCase interface {
-	CreateUser(user *entities.User) (*entities.User, error)
+	CreateUserUseCase(user *entities.User) (entities.User, error)
 	GetUserUseCase(user entities.User) (*entities.User, error)
 }
 
@@ -16,17 +16,16 @@ func NewUserUseCase() UserUseCase {
 	return &userUseCase{}
 }
 
-func (*userUseCase) CreateUser(user *entities.User) (*entities.User, error) {
+func (*userUseCase) CreateUserUseCase(user *entities.User) (entities.User, error) {
 	if user.FirstName == "" && user.LastName == "" && user.Age == 0 && user.Password == "" {
 		err := errors.New("All fields are required")
-		return user, err
+		return *user, err
 	}
-	return &entities.User{
-		ID:        "1",
-		FirstName: "Oséias",
-		LastName:  "Costa",
-		Age:       32,
-		Password:  "12345",
+	return entities.User{
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Age:       user.Age,
+		Password:  user.Password,
 	}, nil
 }
 

@@ -23,3 +23,7 @@ func (*muxRouter) SERVE(port string) {
 func (*muxRouter) GET(path string, handler func(http.ResponseWriter, *http.Request)) {
 	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodGet)
 }
+
+func (*muxRouter) POST(path string, handler func(http.ResponseWriter, *http.Request)) {
+	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodPost)
+}
