@@ -27,3 +27,11 @@ func (*muxRouter) GET(path string, handler func(http.ResponseWriter, *http.Reque
 func (*muxRouter) POST(path string, handler func(http.ResponseWriter, *http.Request)) {
 	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodPost)
 }
+
+func (*muxRouter) PUT(path string, handler func(http.ResponseWriter, *http.Request)) {
+	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodPut)
+}
+
+func (*muxRouter) DELETE(path string, handler func(http.ResponseWriter, *http.Request)) {
+	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodDelete)
+}
