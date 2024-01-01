@@ -90,18 +90,11 @@ func (*userRepository) UpdateUser(u entities.User) (entities.User, error) {
 
 func (*userRepository) DeleteUser(id string) bool {
 	for key, user := range users {
-		if user.ID == id {
-			isOk := userUseCases.DeleteUser(user, id)
-			if isOk {
-				slices.Delete(users, 1, key)
-				// RemoveUser(users, key)
-			}
-			return true
+		idDelete := userUseCases.DeleteUser(user, id)
+		if idDelete {
+			users = slices.Delete(users, key, key+1)
 		}
+		return true
 	}
 	return false
-}
-
-func RemoveUser(u []entities.User, key int) []entities.User {
-	return append(u[:key], u[key+1:]...)
 }
