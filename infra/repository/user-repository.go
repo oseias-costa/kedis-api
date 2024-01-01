@@ -2,10 +2,9 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 	"main/entities"
 	"main/usecases"
-	"math/rand"
+	"slices"
 )
 
 var userUseCases usecases.UserUseCase
@@ -30,6 +29,9 @@ var users = []entities.User{
 type UserRepository interface {
 	GetUser(id string) (entities.User, error)
 	CreateUser(user entities.User) (entities.User, error)
+	GetAllUsers() ([]entities.User, error)
+	UpdateUser(u entities.User) (entities.User, error)
+	DeleteUser(id string) bool
 }
 
 type userRepository struct{}
@@ -54,11 +56,52 @@ func (*userRepository) GetUser(id string) (entities.User, error) {
 }
 
 func (*userRepository) CreateUser(user entities.User) (entities.User, error) {
-	user.ID = fmt.Sprint(rand.Intn(10000))
-	newUser, err := userUseCases.CreateUserUseCase(&user)
+	newUser, err := userUseCases.CreateUserUseCase(user)
 	if err != nil {
 		return user, errors.New("Error at create user")
 	}
 	users = append(users, newUser)
 	return newUser, nil
+}
+
+func (*userRepository) GetAllUsers() ([]entities.User, error) {
+	allUsers, err := userUseCases.GetAllUsers(users)
+	if err != nil {
+		return users, errors.New("User not find")
+	}
+
+	return allUsers, nil
+}
+
+func (*userRepository) UpdateUser(u entities.User) (entities.User, error) {
+	for key, user := range users {
+		if user.ID == u.ID {
+			updateUser, err := userUseCases.UpdateUser(u)
+			if err != nil {
+				return user, errors.New("user not update")
+			}
+
+			users[key] = updateUser
+			return user, nil
+		}
+	}
+	return u, errors.New("user not found")
+}
+
+func (*userRepository) DeleteUser(id string) bool {
+	for key, user := range users {
+		if user.ID == id {
+			isOk := userUseCases.DeleteUser(user, id)
+			if isOk {
+				slices.Delete(users, 1, key)
+				// RemoveUser(users, key)
+			}
+			return true
+		}
+	}
+	return false
+}
+
+func RemoveUser(u []entities.User, key int) []entities.User {
+	return append(u[:key], u[key+1:]...)
 }
