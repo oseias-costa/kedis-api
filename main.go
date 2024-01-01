@@ -22,5 +22,8 @@ func main() {
 	})
 	httpRouter.GET("/user/{id}", userController.GetUserByID)
 	httpRouter.POST("/user/", userController.CreateNewUser)
+	httpRouter.GET("/user/", userController.GetAllUsers)
+	httpRouter.PUT("/user/", userController.UpdateUser)
+	httpRouter.DELETE("/user/{id}", userController.DeleteUser)
 	httpRouter.SERVE(":8100")
 }
