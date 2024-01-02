@@ -11,7 +11,7 @@ func TestUserUseCase(t *testing.T) {
 		ID:        "1",
 		FirstName: "Oséias",
 		LastName:  "Costa",
-		Age:       32,
+		Email:     "oseiasc2@gmail.com",
 		Password:  "12345",
 	}
 
@@ -28,9 +28,9 @@ func TestUserUseCase(t *testing.T) {
 	t.Run("Shold Get user by id", func(t *testing.T) {
 		t.Helper()
 		getUser, _ := usecase.GetUserUseCase(mockUser)
-		expect := 32
+		expect := "oseiasc2@gmail.com"
 
-		if getUser.Age != expect {
+		if getUser.Email != expect {
 			t.Errorf("Expect Age %v, but got %v", getUser.Age, expect)
 		}
 	})
