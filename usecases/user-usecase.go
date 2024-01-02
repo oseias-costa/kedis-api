@@ -3,8 +3,6 @@ package usecases
 import (
 	"errors"
 	"main/entities"
-	"math/rand"
-	"strconv"
 )
 
 type UserUseCase interface {
@@ -22,16 +20,14 @@ func NewUserUseCase() UserUseCase {
 }
 
 func (*userUseCase) CreateUserUseCase(user entities.User) (entities.User, error) {
-	newId := strconv.Itoa(rand.Intn(10000))
-	if user.FirstName == "" && user.LastName == "" && user.Age == 0 && user.Password == "" {
+	if user.FirstName == "" && user.LastName == "" && user.Password == "" {
 		err := errors.New("All fields are required")
 		return user, err
 	}
 	return entities.User{
-		ID:        newId,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
-		Age:       user.Age,
+		Email:     user.Email,
 		Password:  user.Password,
 	}, nil
 }
@@ -49,15 +45,14 @@ func (*userUseCase) GetAllUsers(users []entities.User) ([]entities.User, error) 
 }
 
 func (*userUseCase) UpdateUser(user entities.User) (entities.User, error) {
-	if user.FirstName == "" && user.LastName == "" && user.Age == 0 && user.Password == "" {
+	if user.FirstName == "" && user.LastName == "" && user.Password == "" {
 		err := errors.New("All fields are required")
 		return user, err
 	}
 	return entities.User{
-		ID:        user.ID,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
-		Age:       user.Age,
+		Email:     user.Email,
 		Password:  user.Password,
 	}, nil
 }
