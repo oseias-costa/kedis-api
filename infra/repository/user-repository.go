@@ -14,14 +14,14 @@ var users = []entities.User{
 		ID:        "1",
 		FirstName: "Oséias",
 		LastName:  "Costa",
-		Age:       32,
+		Email:     "oseiasc2@gmail.com",
 		Password:  "12345",
 	},
 	{
 		ID:        "2",
 		FirstName: "Rangel",
 		LastName:  "Amilton Costa",
-		Age:       35,
+		Email:     "rangel@email.com",
 		Password:  "54312",
 	},
 }
