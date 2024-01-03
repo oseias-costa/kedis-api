@@ -2,9 +2,11 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"main/entities"
+	"main/infra/persistence"
 	"main/usecases"
-	"slices"
+	// "slices"
 )
 
 var userUseCases usecases.UserUseCase
@@ -60,7 +62,24 @@ func (*userRepository) CreateUser(user entities.User) (entities.User, error) {
 	if err != nil {
 		return user, errors.New("Error at create user")
 	}
-	users = append(users, newUser)
+
+	c := persistence.Connect()
+	sql := `INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)`
+
+	smtp, err := c.Prepare(sql)
+	if err != nil {
+		return user, err
+	}
+
+	res, err := smtp.Exec(newUser.FirstName, newUser.LastName, newUser.Email, newUser.Password)
+	if err != nil {
+		return user, err
+	}
+
+	fmt.Printf("res: %v\n", res)
+	defer smtp.Close()
+	defer c.Close()
+
 	return newUser, nil
 }
 
@@ -89,12 +108,12 @@ func (*userRepository) UpdateUser(u entities.User) (entities.User, error) {
 }
 
 func (*userRepository) DeleteUser(id string) bool {
-	for key, user := range users {
+	for _, user := range users {
 		idDelete := userUseCases.DeleteUser(user, id)
 		if idDelete {
-			users = slices.Delete(users, key, key+1)
+			// users = slices.Delete(users, key, key+1)
+			return true
 		}
-		return true
 	}
 	return false
 }
