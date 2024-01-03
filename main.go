@@ -3,6 +3,7 @@ package main
 import (
 	// "encoding/json"
 	"fmt"
+	"main/infra/persistence"
 	"main/infra/repository"
 	"main/infra/router"
 	"main/presentation/controller"
@@ -17,9 +18,19 @@ var userController = controller.NewUserController(userRepository)
 
 func main() {
 	fmt.Println("Hello, World!")
+
 	httpRouter.GET("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"message": "Hello World"}`))
 	})
+
+	users, err := persistence.GetAll()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println("user list")
+	fmt.Println(users)
+
 	httpRouter.GET("/user/{id}", userController.GetUserByID)
 	httpRouter.POST("/user/", userController.CreateNewUser)
 	httpRouter.GET("/user/", userController.GetAllUsers)
