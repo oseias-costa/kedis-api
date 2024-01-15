@@ -57,6 +57,11 @@ func (*userUseCase) LoginUseCase(l domain.Login) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(res.Password), []byte(l.Password))
+	if err != nil {
+		return false, err
+	}
 	fmt.Println(&res)
 	return true, nil
 }

@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"database/sql"
 	"fmt"
 	"main/domain"
 	"main/infra/persistence"
@@ -9,7 +8,7 @@ import (
 
 type UserRepositoryInterface interface {
 	CreateUserRepo(user domain.User) (domain.User, error)
-	LoginUserRepo(l domain.Login) (sql.Result, error)
+	LoginUserRepo(l domain.Login) (domain.User, error)
 }
 
 type userRepo struct{}
@@ -34,32 +33,22 @@ func (*userRepo) CreateUserRepo(user domain.User) (domain.User, error) {
 		return user, err
 	}
 
-	fmt.Println(res)
-
+	fmt.Println("res createUser", res)
 	return user, nil
 }
 
-func (*userRepo) LoginUserRepo(l domain.Login) (sql.Result, error) {
-	var res sql.Result
+func (*userRepo) LoginUserRepo(l domain.Login) (domain.User, error) {
+	var user domain.User
+
 	c := persistence.Connect()
-	defer c.Close()
 	sql := `SELECT * FROM user WHERE email = ?`
 
-	r, err := c.Query(sql)
+	r, err := c.Query(sql, l.Email)
 	if err != nil {
-		return res, err
+		return user, err
 	}
-	defer r.Close()
-
-	// r, err = stmt.Exec(l.Email)
-	// if err != nil {
-	// 	return res, err
-	// }
-
-	var users []domain.User
 
 	for r.Next() {
-		var user domain.User
 		err := r.Scan(
 			&user.FirstName,
 			&user.LastName,
@@ -69,14 +58,12 @@ func (*userRepo) LoginUserRepo(l domain.Login) (sql.Result, error) {
 		)
 
 		if err != nil {
-			return nil, err
+			return user, err
 		}
-
-		users = append(users, user)
 	}
+	fmt.Println("Result db", user)
+	defer c.Close()
+	defer r.Close()
 
-	fmt.Println("esse é o retorno", users)
-
-	return res, nil
-
+	return user, nil
 }
