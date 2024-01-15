@@ -1,8 +1,8 @@
 package persistence
 
-import "main/entities"
+import "main/domain"
 
-func GetAll() ([]entities.User, error) {
+func GetAll() ([]domain.User, error) {
 	con := Connect()
 	defer con.Close()
 	sql := "SELECT * FROM user"
@@ -12,10 +12,10 @@ func GetAll() ([]entities.User, error) {
 		return nil, err
 	}
 
-	var users []entities.User
+	var users []domain.User
 
 	for r.Next() {
-		var user entities.User
+		var user domain.User
 		err := r.Scan(
 			&user.FirstName,
 			&user.LastName,
