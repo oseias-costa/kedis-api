@@ -13,6 +13,7 @@ import (
 
 type UserUseCaseInterface interface {
 	CreateUserUseCase(user domain.User) (domain.User, error)
+	LoginUseCase(l domain.Login) (bool, error)
 }
 
 type userUseCase struct{}
@@ -49,6 +50,15 @@ func (*userUseCase) CreateUserUseCase(user domain.User) (domain.User, error) {
 	fmt.Printf("test %v", u)
 
 	return user, nil
+}
+
+func (*userUseCase) LoginUseCase(l domain.Login) (bool, error) {
+	res, err := repo.LoginUserRepo(l)
+	if err != nil {
+		return false, err
+	}
+	fmt.Println(&res)
+	return true, nil
 }
 
 func verifyUser(user domain.User) (bool, error) {

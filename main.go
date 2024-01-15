@@ -34,5 +34,7 @@ func main() {
 
 	// httpRouter.GET("/user/{id}", userController.GetUserByID)
 	httpRouter.POST("/user/", userController.CreateUser)
+	httpRouter.POST("/login", userController.LoginUser)
+
 	httpRouter.SERVE(os.Getenv("PORT"))
 }

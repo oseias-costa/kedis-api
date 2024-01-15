@@ -12,6 +12,7 @@ var userUseCase = usecases.NewUserUseCase()
 
 type UserControlerInterface interface {
 	CreateUser(w http.ResponseWriter, r *http.Request)
+	LoginUser(w http.ResponseWriter, r *http.Request)
 }
 
 type userController struct{}
@@ -37,4 +38,21 @@ func (*userController) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(user)
+}
+
+func (*userController) LoginUser(w http.ResponseWriter, r *http.Request) {
+	var login domain.Login
+	err := json.NewDecoder(r.Body).Decode(&login)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error": "email or password not valid"}`))
+	}
+
+	i, newError := userUseCase.LoginUseCase(login)
+	if newError != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprint(newError)))
+	}
+
+	fmt.Println("return controller", i)
 }
