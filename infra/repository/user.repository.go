@@ -9,7 +9,7 @@ import (
 
 type UserRepositoryInterface interface {
 	CreateUserRepo(user domain.User) (domain.User, error)
-	LoginUserRepo(email, password string) (sql.Result, error)
+	LoginUserRepo(l domain.Login) (sql.Result, error)
 }
 
 type userRepo struct{}
@@ -34,27 +34,48 @@ func (*userRepo) CreateUserRepo(user domain.User) (domain.User, error) {
 		return user, err
 	}
 
-	fmt.Printf("res: %v\n", res)
+	fmt.Println(res)
 
 	return user, nil
 }
 
-func (*userRepo) LoginUserRepo(email, password string) (sql.Result, error) {
+func (*userRepo) LoginUserRepo(l domain.Login) (sql.Result, error) {
 	var res sql.Result
 	c := persistence.Connect()
 	defer c.Close()
 	sql := `SELECT * FROM user WHERE email = ?`
 
-	stmt, err := c.Prepare(sql)
+	r, err := c.Query(sql)
 	if err != nil {
 		return res, err
 	}
-	defer stmt.Close()
+	defer r.Close()
 
-	res, err = stmt.Exec(email, password)
-	if err != nil {
-		return res, err
+	// r, err = stmt.Exec(l.Email)
+	// if err != nil {
+	// 	return res, err
+	// }
+
+	var users []domain.User
+
+	for r.Next() {
+		var user domain.User
+		err := r.Scan(
+			&user.FirstName,
+			&user.LastName,
+			&user.Email,
+			&user.Password,
+			&user.ID,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
 	}
+
+	fmt.Println("esse é o retorno", users)
 
 	return res, nil
 
