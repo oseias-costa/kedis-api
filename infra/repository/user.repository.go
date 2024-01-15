@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"main/domain"
 	"main/infra/persistence"
@@ -8,6 +9,7 @@ import (
 
 type UserRepositoryInterface interface {
 	CreateUserRepo(user domain.User) (domain.User, error)
+	LoginUserRepo(email, password string) (sql.Result, error)
 }
 
 type userRepo struct{}
@@ -35,4 +37,25 @@ func (*userRepo) CreateUserRepo(user domain.User) (domain.User, error) {
 	fmt.Printf("res: %v\n", res)
 
 	return user, nil
+}
+
+func (*userRepo) LoginUserRepo(email, password string) (sql.Result, error) {
+	var res sql.Result
+	c := persistence.Connect()
+	defer c.Close()
+	sql := `SELECT * FROM user WHERE email = ?`
+
+	stmt, err := c.Prepare(sql)
+	if err != nil {
+		return res, err
+	}
+	defer stmt.Close()
+
+	res, err = stmt.Exec(email, password)
+	if err != nil {
+		return res, err
+	}
+
+	return res, nil
+
 }
