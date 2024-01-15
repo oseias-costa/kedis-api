@@ -1,20 +1,21 @@
 package main
 
 import (
-	// "encoding/json"
 	"fmt"
+	"main/infra/initializers"
 	"main/infra/persistence"
-	"main/infra/repository"
 	"main/infra/router"
 	"main/presentation/controller"
-	"main/usecases"
 	"net/http"
+	"os"
 )
 
 var httpRouter = router.NewMuxRouter()
-var userUseCase = usecases.NewUserUseCase()
-var userRepository = repository.NewUserRepository(userUseCase)
-var userController = controller.NewUserController(userRepository)
+var userController = controller.NewUserController()
+
+func init() {
+	initializers.LoadEnvVariables()
+}
 
 func main() {
 	fmt.Println("Hello, World!")
@@ -31,10 +32,7 @@ func main() {
 	fmt.Println("user list")
 	fmt.Println(users)
 
-	httpRouter.GET("/user/{id}", userController.GetUserByID)
-	httpRouter.POST("/user/", userController.CreateNewUser)
-	httpRouter.GET("/user/", userController.GetAllUsers)
-	httpRouter.PUT("/user/", userController.UpdateUser)
-	httpRouter.DELETE("/user/{id}", userController.DeleteUser)
-	httpRouter.SERVE(":8100")
+	// httpRouter.GET("/user/{id}", userController.GetUserByID)
+	httpRouter.POST("/user/", userController.CreateUser)
+	httpRouter.SERVE(os.Getenv("PORT"))
 }
