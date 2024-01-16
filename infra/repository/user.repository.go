@@ -50,11 +50,11 @@ func (*userRepo) LoginUserRepo(l domain.Login) (domain.User, error) {
 
 	for r.Next() {
 		err := r.Scan(
+			&user.ID,
 			&user.FirstName,
 			&user.LastName,
 			&user.Email,
 			&user.Password,
-			&user.ID,
 		)
 
 		if err != nil {

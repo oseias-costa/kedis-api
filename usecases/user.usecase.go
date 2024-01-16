@@ -6,14 +6,16 @@ import (
 	"main/domain"
 	"main/infra/repository"
 	"net/mail"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserUseCaseInterface interface {
 	CreateUserUseCase(user domain.User) (domain.User, error)
-	LoginUseCase(l domain.Login) (bool, error)
+	LoginUseCase(l domain.Login) (string, error)
 }
 
 type userUseCase struct{}
@@ -52,18 +54,36 @@ func (*userUseCase) CreateUserUseCase(user domain.User) (domain.User, error) {
 	return user, nil
 }
 
-func (*userUseCase) LoginUseCase(l domain.Login) (bool, error) {
+func (*userUseCase) LoginUseCase(l domain.Login) (string, error) {
 	res, err := repo.LoginUserRepo(l)
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(res.Password), []byte(l.Password))
 	if err != nil {
-		return false, err
+		return "", err
 	}
-	fmt.Println(&res)
-	return true, nil
+
+	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
+		"sub": res.ID,
+		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+	})
+
+	pk, err := jwt.ParseRSAPrivateKeyFromPEM([]byte("secret"))
+	if err != nil {
+		return "", err
+	}
+
+	tokenString, err := token.SignedString(pk)
+	if err != nil {
+		return "", err
+	}
+	fmt.Println("tokenString", tokenString)
+
+	sendToken := fmt.Sprintf(`"token": "%s"`, token)
+
+	return sendToken, nil
 }
 
 func verifyUser(user domain.User) (bool, error) {
