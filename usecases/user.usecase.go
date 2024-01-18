@@ -1,12 +1,8 @@
 package usecases
 
 import (
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
 	"errors"
 	"fmt"
-	"log"
 	"main/domain"
 	"main/infra/repository"
 	"net/mail"
@@ -20,6 +16,7 @@ import (
 type UserUseCaseInterface interface {
 	CreateUserUseCase(user domain.User) (domain.User, error)
 	LoginUseCase(l domain.Login) (string, error)
+	GetUserById(token string) (domain.User, error)
 }
 
 type userUseCase struct{}
@@ -74,20 +71,28 @@ func (*userUseCase) LoginUseCase(l domain.Login) (string, error) {
 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 
-	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	// key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// 	return "", err
+	// }
+
+	tokenString, err := token.SignedString([]byte("secret"))
 	if err != nil {
-		log.Fatal(err)
 		return "", err
 	}
 
-	tokenString, err := token.SignedString(key)
-	if err != nil {
-		return "", err
-	}
-
-	sendToken := fmt.Sprintf(`"token": "%s"`, tokenString)
+	sendToken := fmt.Sprintf(`"token STRING": "%s"`, tokenString)
 
 	return sendToken, nil
+}
+
+func (*userUseCase) GetUserById(token string) (domain.User, error) {
+	var user domain.User
+	tokenTest := "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDgxNjkwNjcsInN1YiI6ImUzYWUwZGJkLTU3NDUtNGY4Ny1hN2E1LWU4ZjJhZDU3NjMzZiJ9.i6LP1EWmPHz9dPrh1Rlxfbf6wgSbBXWQEjwaA9euNliylsDYCgA3s_0B-VF56L3WJOQzsNJ6EUAzYo3zNW_gzg"
+
+	fmt.Println(tokenTest)
+	return user, nil
 }
 
 func verifyUser(user domain.User) (bool, error) {
