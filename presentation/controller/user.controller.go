@@ -54,5 +54,6 @@ func (*userController) LoginUser(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprint(newError)))
 	}
 
-	fmt.Println("return controller", i)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(i))
 }

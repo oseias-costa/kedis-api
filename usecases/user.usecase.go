@@ -1,8 +1,12 @@
 package usecases
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
 	"errors"
 	"fmt"
+	"log"
 	"main/domain"
 	"main/infra/repository"
 	"net/mail"
@@ -70,18 +74,18 @@ func (*userUseCase) LoginUseCase(l domain.Login) (string, error) {
 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 
-	pk, err := jwt.ParseRSAPrivateKeyFromPEM([]byte("secret"))
+	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+
+	tokenString, err := token.SignedString(key)
 	if err != nil {
 		return "", err
 	}
 
-	tokenString, err := token.SignedString(pk)
-	if err != nil {
-		return "", err
-	}
-	fmt.Println("tokenString", tokenString)
-
-	sendToken := fmt.Sprintf(`"token": "%s"`, token)
+	sendToken := fmt.Sprintf(`"token": "%s"`, tokenString)
 
 	return sendToken, nil
 }
