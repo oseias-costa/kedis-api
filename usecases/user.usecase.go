@@ -6,6 +6,7 @@ import (
 	"main/domain"
 	"main/infra/repository"
 	"net/mail"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -13,10 +14,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type Claims struct {
+	Id string
+}
+
 type UserUseCaseInterface interface {
 	CreateUserUseCase(user domain.User) (domain.User, error)
 	LoginUseCase(l domain.Login) (string, error)
-	GetUserById(token string) (domain.User, error)
+	// GetUserById(token string) (string, error)
 }
 
 type userUseCase struct{}
@@ -65,34 +70,58 @@ func (*userUseCase) LoginUseCase(l domain.Login) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
-		"sub": res.ID,
-		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
-	})
-
-	// key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	return "", err
-	// }
-
-	tokenString, err := token.SignedString([]byte("secret"))
+	token, err := GenerateToken(res.ID)
 	if err != nil {
 		return "", err
 	}
 
-	sendToken := fmt.Sprintf(`"token STRING": "%s"`, tokenString)
+	sendToken := fmt.Sprintf(`{"token": "%s"}`, token)
 
 	return sendToken, nil
 }
 
-func (*userUseCase) GetUserById(token string) (domain.User, error) {
-	var user domain.User
-	tokenTest := "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDgxNjkwNjcsInN1YiI6ImUzYWUwZGJkLTU3NDUtNGY4Ny1hN2E1LWU4ZjJhZDU3NjMzZiJ9.i6LP1EWmPHz9dPrh1Rlxfbf6wgSbBXWQEjwaA9euNliylsDYCgA3s_0B-VF56L3WJOQzsNJ6EUAzYo3zNW_gzg"
+func GetUserById(c Claims) (string, error) {
+	claims := c
 
-	fmt.Println(tokenTest)
-	return user, nil
+	return claims.Id, nil
+}
+
+func GenerateToken(u string) (string, error) {
+	now := time.Now()
+	expires := now.Add(time.Second * 55).Unix()
+	claims := jwt.MapClaims{
+		"sub":    u,
+		"expire": expires,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(os.Getenv("SECRET")))
+}
+
+func ValidateToken(tokenStr string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("invalid token")
+		}
+		return []byte(os.Getenv("SECRET")), nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("invalid token")
+	}
+
+	if !token.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("invalid token")
+	}
+	expValue := claims["expire"].(float64)
+	expires := int64(expValue)
+	if time.Now().Unix() > expires {
+		return nil, fmt.Errorf("token expired")
+	}
+
+	return claims, nil
 }
 
 func verifyUser(user domain.User) (bool, error) {
