@@ -8,8 +8,6 @@ import (
 	"main/presentation/middlewares"
 	"net/http"
 	"os"
-
-	"github.com/gorilla/mux"
 )
 
 var httpRouter = router.NewMuxRouter()
@@ -38,17 +36,16 @@ func main() {
 	// fmt.Println("user list")
 	// fmt.Println(users)
 
-	// // httpRouter.GET("/user/{id}", userController.GetUserByID)
+	httpRouter.GET("/user/", middlewares.Auth(userController.GetUser))
 	httpRouter.POST("/user/", userController.CreateUser)
-	// httpRouter.POST("/login", userController.LoginUser)
+	httpRouter.POST("/login", userController.LoginUser)
 
-	r := mux.NewRouter()
+	// r := mux.NewRouter()
 
-	r.HandleFunc("/login", userController.LoginUser).Methods(http.MethodPost)
-	r.HandleFunc("/", middlewares.Auth(Test)).Methods(http.MethodGet)
-	http.Handle("/", r)
+	// r.HandleFunc("/login", userController.LoginUser).Methods(http.MethodPost)
+	// r.HandleFunc("/", middlewares.Auth(Test)).Methods(http.MethodGet)
 
-	http.ListenAndServe(os.Getenv("PORT"), nil)
+	httpRouter.SERVE(os.Getenv("PORT"))
 }
 
 func Test(w http.ResponseWriter, r *http.Request) {

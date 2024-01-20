@@ -21,7 +21,7 @@ type Claims struct {
 type UserUseCaseInterface interface {
 	CreateUserUseCase(user domain.User) (domain.User, error)
 	LoginUseCase(l domain.Login) (string, error)
-	// GetUserById(token string) (string, error)
+	GetUser(id string) (domain.User, error)
 }
 
 type userUseCase struct{}
@@ -80,15 +80,18 @@ func (*userUseCase) LoginUseCase(l domain.Login) (string, error) {
 	return sendToken, nil
 }
 
-func GetUserById(c Claims) (string, error) {
-	claims := c
+func (*userUseCase) GetUser(id string) (domain.User, error) {
+	u, err := repo.GetUserRepo(id)
+	if err != nil {
+		return u, err
+	}
 
-	return claims.Id, nil
+	return u, nil
 }
 
 func GenerateToken(u string) (string, error) {
 	now := time.Now()
-	expires := now.Add(time.Second * 55).Unix()
+	expires := now.Add(time.Hour * 168).Unix()
 	claims := jwt.MapClaims{
 		"sub":    u,
 		"expire": expires,

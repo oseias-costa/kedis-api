@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"main/domain"
 	"main/usecases"
 	"net/http"
@@ -13,6 +14,7 @@ var userUseCase = usecases.NewUserUseCase()
 type UserControlerInterface interface {
 	CreateUser(w http.ResponseWriter, r *http.Request)
 	LoginUser(w http.ResponseWriter, r *http.Request)
+	GetUser(w http.ResponseWriter, r *http.Request)
 }
 
 type userController struct{}
@@ -58,7 +60,16 @@ func (*userController) LoginUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(i))
 }
 
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func (*userController) GetUser(w http.ResponseWriter, r *http.Request) {
+	b, _ := io.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	user, err := userUseCase.GetUser(string(b))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprint(err)))
+	}
+
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"this": "is sparta"}`))
+	json.NewEncoder(w).Encode(user)
 }
