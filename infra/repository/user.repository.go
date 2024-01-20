@@ -9,7 +9,7 @@ import (
 type UserRepositoryInterface interface {
 	CreateUserRepo(user domain.User) (domain.User, error)
 	LoginUserRepo(l domain.Login) (domain.User, error)
-	GetUserRepo(id string) (domain.User, error)
+	GetUserRepo(id string) (domain.UserResponse, error)
 }
 
 type userRepo struct{}
@@ -69,8 +69,8 @@ func (*userRepo) LoginUserRepo(l domain.Login) (domain.User, error) {
 	return user, nil
 }
 
-func (*userRepo) GetUserRepo(id string) (domain.User, error) {
-	var user domain.User
+func (*userRepo) GetUserRepo(id string) (domain.UserResponse, error) {
+	var user domain.UserResponse
 	c := persistence.Connect()
 
 	r, err := c.Query(`SELECT * FROM user WHERE id = ?`, id)

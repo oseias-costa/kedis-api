@@ -21,7 +21,7 @@ type Claims struct {
 type UserUseCaseInterface interface {
 	CreateUserUseCase(user domain.User) (domain.User, error)
 	LoginUseCase(l domain.Login) (string, error)
-	GetUser(id string) (domain.User, error)
+	GetUser(id string) (domain.UserResponse, error)
 }
 
 type userUseCase struct{}
@@ -80,7 +80,7 @@ func (*userUseCase) LoginUseCase(l domain.Login) (string, error) {
 	return sendToken, nil
 }
 
-func (*userUseCase) GetUser(id string) (domain.User, error) {
+func (*userUseCase) GetUser(id string) (domain.UserResponse, error) {
 	u, err := repo.GetUserRepo(id)
 	if err != nil {
 		return u, err
