@@ -1,0 +1,72 @@
+   [
+        {
+          "id": 1,  
+          "serviceType": "Suporte",
+          "topic": "Planos e Suporte da AWS",
+          "question": "Quais são os principais benefícios do Plano de Suporte Básico da AWS?",
+          "opcoes": [
+            "A) Acesso a suporte técnico 24/7, fóruns de discussão, e acesso a arquivos de suporte.",
+            "B) Suporte técnico apenas durante o horário comercial.",
+            "C) Acesso exclusivo a recursos de treinamento online.",
+            "D) Suporte apenas para serviços gratuitos da AWS."
+          ],
+          "correctAlternative": "A",
+          "correctAlternativeFeedback": "Correto! O Plano de Suporte Básico inclui acesso 24/7 ao suporte técnico, fóruns e arquivos de suporte."
+        },
+        {
+          "id": 2,  
+          "serviceType": "Suporte",
+          "topic": "Planos e Suporte da AWS",
+          "question": "Qual é a principal vantagem do Plano de Suporte Empresarial da AWS em comparação com o Plano de Suporte Básico?",
+          "opcoes": [
+            "A) Acesso a um Gerente de Conta de Suporte Técnico.",
+            "B) Desconto em todos os serviços da AWS.",
+            "C) Suporte técnico mais rápido.",
+            "D) Acesso ilimitado a instâncias de suporte."
+          ],
+          "correctAlternative": "A",
+          "correctAlternativeFeedback": "Correto! O Plano de Suporte Empresarial oferece acesso a um Gerente de Conta de Suporte Técnico para ajudar na gestão do suporte."
+        },
+        { 
+          "id": 3,    
+          "serviceType": "Suporte",
+          "topic": "Planos e Suporte da AWS",
+          "question": "O que é o AWS Trusted Advisor?",
+          "opcoes": [
+            "A) Um serviço de consultoria externa para clientes da AWS.",
+            "B) Um serviço de suporte apenas para contas de nível empresarial.",
+            "C) Uma ferramenta que fornece recomendações de otimização e segurança.",
+            "D) Um serviço para certificação de segurança na nuvem."
+          ],
+          "correctAlternative": "C",
+          "correctAlternativeFeedback": "Correto! O AWS Trusted Advisor é uma ferramenta que fornece recomendações de otimização e segurança para ambientes na AWS."
+        },
+        { 
+          "id": 4,    
+          "serviceType": "Suporte",
+          "topic": "Planos e Suporte da AWS",
+          "question": "Quais são os canais de suporte disponíveis no Plano de Suporte Básico da AWS?",
+          "opcoes": [
+            "A) Apenas e-mail.",
+            "B) E-mail e chat online.",
+            "C) Telefone, e-mail e chat online.",
+            "D) Apenas telefone."
+          ],
+          "correctAlternative": "C",
+          "correctAlternativeFeedback": "Correto! O Plano de Suporte Básico inclui suporte via telefone, e-mail e chat online."
+        },
+        { 
+          "id": 5,    
+          "serviceType": "Suporte",
+          "topic": "Planos e Suporte da AWS",
+          "question": "Quais são alguns dos recursos do Plano de Suporte Empresarial da AWS?",
+          "opcoes": [
+            "A) Acesso a um Gerente de Conta de Suporte Técnico, resposta mais rápida para casos críticos e revisões de arquitetura.",
+            "B) Suporte apenas para serviços de computação.",
+            "C) Desconto exclusivo para clientes empresariais.",
+            "D) Acesso a instâncias de suporte limitadas."
+          ],
+          "correctAlternative": "A",
+          "correctAlternativeFeedback": "Correto! O Plano de Suporte Empresarial inclui acesso a um Gerente de Conta de Suporte Técnico, resposta mais rápida para casos críticos e revisões de arquitetura."
+        }
+      ]

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"main/infra/initializers"
+	"main/infra/repository"
 	"main/infra/router"
 	"main/presentation/controller"
 	"main/presentation/middlewares"
@@ -22,17 +23,17 @@ func init() {
 }
 
 func main() {
-	// fmt.Println("Hello, World!")
-
-	// httpRouter.GET("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	w.Write([]byte(`{"message": "Hello World"}`))
-	// })
-
 	// users, err := persistence.GetAll()
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
 
+	data, err := repository.ExameAwsRepository("./assets/test.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(data)
 	// fmt.Println("user list")
 	// fmt.Println(users)
 
