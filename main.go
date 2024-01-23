@@ -27,7 +27,7 @@ func main() {
 	// 	fmt.Println(err)
 	// }
 
-	data, err := repository.ExameAwsRepository("./assets/test.json")
+	data, err := repository.ExameAwsRepository("./assets/cloud-practictioner#1.json")
 	if err != nil {
 		fmt.Println(err)
 	}
