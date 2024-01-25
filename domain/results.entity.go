@@ -19,3 +19,12 @@ type WrongAnswers struct {
 	WrongsAnswers int64  `json:"wrongAnswers"`
 	Total         int64  `json:"total"`
 }
+
+type ExamTypeBody struct {
+	Id   string  `json:"id"`
+	Body ExamReq `json:"body"`
+}
+
+type ExamReq struct {
+	ExamName string `json:"examName"`
+}

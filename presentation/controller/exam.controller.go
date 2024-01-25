@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"main/domain"
 	"main/usecases"
 	"net/http"
 )
@@ -21,6 +23,8 @@ func NewExamController(u usecases.ExamUseCase) ExamController {
 }
 
 func (*examController) GetExam(w http.ResponseWriter, r *http.Request) {
+	var exam domain.ExamTypeBody
+
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -28,7 +32,12 @@ func (*examController) GetExam(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("esse é o body do GetExam", b)
+	err = json.NewDecoder([]byte(string(b))).Decode(&exam)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error": "user not decoded"}`))
+	}
+	fmt.Println("esse é o body do Ver se deu")
 
 	arr, err := examUseCase.GetExamUseCase("./assets/cloud-practictioner#1.json")
 	if err != nil {

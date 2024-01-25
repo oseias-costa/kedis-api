@@ -29,7 +29,7 @@ func main() {
 	httpRouter.POST("/user/", userController.CreateUser)
 	httpRouter.POST("/login", userController.LoginUser)
 
-	httpRouter.GET("/exam", examController.GetExam)
+	httpRouter.GET("/exam", middlewares.Auth(examController.GetExam))
 
 	httpRouter.SERVE(os.Getenv("PORT"))
 }

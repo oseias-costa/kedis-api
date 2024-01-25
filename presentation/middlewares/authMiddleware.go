@@ -33,7 +33,7 @@ func Auth(handlerFunc http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		newBody := fmt.Sprintf("%s %s", id, string(b))
+		newBody := fmt.Sprintf(`{"id": %s, "body": %s}`, id, string(b))
 
 		r.Body = io.NopCloser(strings.NewReader(newBody))
 		defer r.Body.Close()
@@ -43,7 +43,7 @@ func Auth(handlerFunc http.HandlerFunc) http.HandlerFunc {
 }
 
 func AuthTwo(handler http.Handler) http.Handler {
-	var t string = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmUiOjE3MDU3MDg0MzEsInN1YiI6ImUzYWUwZGJkLTU3NDUtNGY4Ny1hN2E1LWU4ZjJhZDU3NjMzZiJ9.w7cmGZclVdBZSNgf7btC5IQSNg4dMX8uIIgZIskQINc"
+	var t string = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmUiOjE3MDY4MTc0NzMsInN1YiI6IjNiY2I3YzZhLWRmMDctNGNlZi1hMGMyLWUzNjEyZDBiZDY2ZiJ9.tCwpaM9gshz3Wv0hcWHDkIfEv4xCssECrJGPjaV54aU"
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
 
