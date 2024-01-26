@@ -21,8 +21,8 @@ type WrongAnswers struct {
 }
 
 type ExamTypeBody struct {
-	Id   string  `json:"id"`
-	Body ExamReq `json:"body"`
+	Id   string `json:"id"`
+	Body string `json:"body"`
 }
 
 type ExamReq struct {
