@@ -13,7 +13,7 @@ type Result struct {
 
 type WrongAnswers struct {
 	Id            string `json:"id"`
-	ResultId      string `json:"ResultId"`
+	ResultId      string `json:"resultId"`
 	ServiceType   string `json:"serviceType"`
 	Topic         string `json:"topic"`
 	WrongsAnswers int64  `json:"wrongAnswers"`

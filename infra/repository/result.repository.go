@@ -19,7 +19,6 @@ func NewResultRepo() ResultRepository {
 
 func (*resultRepo) CreateResultRepo(r domain.Result) error {
 	c := persistence.Connect()
-	defer c.Close()
 
 	sql := "INSERT INTO results (id, userId, cloud, mockExam, result, wrong, correct) VALUES (?, ?, ?, ?, ?, ?, ?)"
 
@@ -27,7 +26,7 @@ func (*resultRepo) CreateResultRepo(r domain.Result) error {
 	if err != nil {
 		return err
 	}
-	stmt.Close()
+	//stmt.Close()
 
 	res, err := stmt.Exec(r.Id, r.UserId, r.Cloud, r.MockExam, r.Result, r.Wrong, r.Correct)
 	if err != nil {
@@ -40,7 +39,6 @@ func (*resultRepo) CreateResultRepo(r domain.Result) error {
 
 func (*resultRepo) CreateWrongAnswerRepo(w domain.WrongAnswers) error {
 	c := persistence.Connect()
-	defer c.Close()
 
 	sql := "INSERT INTO wrongAnswers (id, resultId, serviceType, topic, wrongAnswers, total) VALUES (?, ?, ?, ?, ?, ?)"
 
@@ -48,9 +46,9 @@ func (*resultRepo) CreateWrongAnswerRepo(w domain.WrongAnswers) error {
 	if err != nil {
 		return err
 	}
-	stmt.Close()
+	//stmt.Close()
 
-	res, err := stmt.Exec()
+	res, err := stmt.Exec(w.Id, w.ResultId, w.ServiceType, w.Topic, w.WrongsAnswers, w.Total)
 	if err != nil {
 		return err
 	}

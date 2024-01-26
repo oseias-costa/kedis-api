@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-var resultUseCase = usecases.NewResultUseCase()
+var resultUseCase usecases.ResultUsecase
 
 type ResultController interface {
 	CreateResults(w http.ResponseWriter, r *http.Request)
@@ -16,7 +16,8 @@ type ResultController interface {
 
 type resultController struct{}
 
-func NewResultController() ResultController {
+func NewResultController(usecase usecases.ResultUsecase) ResultController {
+	resultUseCase = usecase
 	return &resultController{}
 }
 
