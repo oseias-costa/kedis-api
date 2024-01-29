@@ -26,3 +26,7 @@ type RecoveryPassword struct {
 	Email string `json:"email"`
 	Code  string `json:"code"`
 }
+
+type Email struct {
+	Email string `json:"email"`
+}

@@ -26,13 +26,15 @@ func init() {
 }
 
 func main() {
-
 	var examUseCase = usecases.NewExamUseCase()
 	var examController = controller.NewExamController(examUseCase)
 
 	httpRouter.GET("/user/", middlewares.Auth(userController.GetUser))
 	httpRouter.POST("/user/", userController.CreateUser)
 	httpRouter.POST("/login", userController.LoginUser)
+	httpRouter.POST("/sendcode", userController.SendRecoveryCode)
+	httpRouter.POST("/verifycode", userController.VerifyRecoveryCode)
+	httpRouter.POST("/updatepassword", userController.UpdatePassword)
 
 	httpRouter.POST("/result", middlewares.Auth(resultController.CreateResults))
 	httpRouter.GET("/exam", middlewares.Auth(examController.GetExam))

@@ -24,8 +24,9 @@ type UserUseCaseInterface interface {
 	CreateUserUseCase(user domain.User) (domain.User, error)
 	LoginUseCase(l domain.Login) (string, error)
 	GetUser(id string) (domain.UserResponse, error)
-	SendPasswordRecovery() (bool, error)
+	SendPasswordRecovery(email string) (bool, error)
 	VerifyPasswordRecoveryCode(email, code string) (bool, error)
+	UpdatePassword(email, newPassword string) (bool, error)
 }
 
 type userUseCase struct{}
@@ -93,18 +94,24 @@ func (*userUseCase) GetUser(id string) (domain.UserResponse, error) {
 	return u, nil
 }
 
-func (*userUseCase) SendPasswordRecovery() (bool, error) {
-	client := resend.NewClient(os.Getenv("APIKEY"))
-	code := fmt.Sprintf("<h1>Recuperar a Senha, código: %s</h1>", rand.Intn(10000))
-
-	params := &resend.SendEmailRequest{
-		From:    "não-responda@kedis.com.br",
-		To:      []string{"oseiasc2@gmail.com"},
-		Subject: "Recuperação de Senha",
-		Html:    code,
+func (*userUseCase) SendPasswordRecovery(email string) (bool, error) {
+	err := repo.EmailIsValid(email)
+	if err != nil {
+		return false, err
 	}
 
-	_, err := client.Emails.Send(params)
+	fmt.Println("EMAIL DO USECASE", email)
+	client := resend.NewClient(os.Getenv("APIKEY"))
+	html := fmt.Sprintf("<h1>Recuperar a Senha, código: %d</h1>", rand.Intn(10000))
+
+	params := &resend.SendEmailRequest{
+		From:    "onboarding@resend.dev",
+		To:      []string{email},
+		Subject: "Kedis - Recuperação de Senha",
+		Html:    html,
+	}
+
+	_, err = client.Emails.Send(params)
 	if err != nil {
 		return false, err
 	}
@@ -113,7 +120,30 @@ func (*userUseCase) SendPasswordRecovery() (bool, error) {
 }
 
 func (*userUseCase) VerifyPasswordRecoveryCode(email, code string) (bool, error) {
+	c, err := repo.VerifyCodeRepository(email)
+	if err != nil {
+		return false, err
+	}
 
+	if c != code {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (*userUseCase) UpdatePassword(email, newPassword string) (bool, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), 10)
+	if err != nil {
+		return false, err
+	}
+
+	_, err = repo.UpdatePasswordRepository(email, string(hash))
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 func GenerateToken(u string) (string, error) {

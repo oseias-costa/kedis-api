@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"main/domain"
 	"main/infra/persistence"
@@ -11,7 +12,9 @@ type UserRepositoryInterface interface {
 	LoginUserRepo(l domain.Login) (domain.User, error)
 	GetUserRepo(id string) (domain.UserResponse, error)
 	SendPasswordRecovery(id, email, code string) (bool, error)
-	VerifyPasswordRecoveryCode(email, code string) (bool, error)
+	VerifyCodeRepository(email string) (string, error)
+	UpdatePasswordRepository(email, newPassword string) (bool, error)
+	EmailIsValid(email string) error
 }
 
 type userRepo struct{}
@@ -113,7 +116,7 @@ func (*userRepo) SendPasswordRecovery(id, email, code string) (bool, error) {
 	return true, nil
 }
 
-func (*userRepo) VerifyPasswordRecoveryCode(email, code string) (string, error) {
+func (*userRepo) VerifyCodeRepository(email string) (string, error) {
 	c := persistence.Connect()
 
 	res, err := c.Query("SELECT * FROM recoveryPassword WHERE email = ?", email)
@@ -134,4 +137,27 @@ func (*userRepo) VerifyPasswordRecoveryCode(email, code string) (string, error) 
 		}
 	}
 	return recovery.Code, nil
+}
+
+func (*userRepo) UpdatePasswordRepository(email, newPassword string) (bool, error) {
+	c := persistence.Connect()
+
+	_, err := c.Prepare(`UPDATE user SET password = ? WHERE email = ?`)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (*userRepo) EmailIsValid(email string) error {
+	c := persistence.Connect()
+
+	res, err := c.Query(`SELECT * FROM user WHERE email = ?`, email)
+	if err != nil {
+		return errors.New(`{"error": "Email is invalid"`)
+	}
+
+	fmt.Println("email is valid \n", res)
+	return nil
 }
