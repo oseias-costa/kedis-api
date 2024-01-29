@@ -24,6 +24,13 @@ func NewUserController() UserControlerInterface {
 }
 
 func (*userController) CreateUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	var user domain.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -43,6 +50,12 @@ func (*userController) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*userController) LoginUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 	var login domain.Login
 	err := json.NewDecoder(r.Body).Decode(&login)
 	if err != nil {

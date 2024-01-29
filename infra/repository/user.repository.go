@@ -10,6 +10,8 @@ type UserRepositoryInterface interface {
 	CreateUserRepo(user domain.User) (domain.User, error)
 	LoginUserRepo(l domain.Login) (domain.User, error)
 	GetUserRepo(id string) (domain.UserResponse, error)
+	SendPasswordRecovery(id, email, code string) (bool, error)
+	VerifyPasswordRecoveryCode(email, code string) (bool, error)
 }
 
 type userRepo struct{}
@@ -95,4 +97,41 @@ func (*userRepo) GetUserRepo(id string) (domain.UserResponse, error) {
 	defer r.Close()
 
 	return user, nil
+}
+
+func (*userRepo) SendPasswordRecovery(id, email, code string) (bool, error) {
+	c := persistence.Connect()
+	stmt, err := c.Prepare(`INSERT INTO recoveryPassword (id, email, code) VALUES (?,?,?)`)
+	if err != nil {
+		return false, err
+	}
+
+	_, err = stmt.Exec(id, email, code)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (*userRepo) VerifyPasswordRecoveryCode(email, code string) (string, error) {
+	c := persistence.Connect()
+
+	res, err := c.Query("SELECT * FROM recoveryPassword WHERE email = ?", email)
+	if err != nil {
+		return "", err
+	}
+
+	var recovery domain.RecoveryPassword
+
+	for res.Next() {
+		err := res.Scan(
+			&recovery.Id,
+			&recovery.Email,
+			&recovery.Code,
+		)
+		if err != nil {
+			return "", err
+		}
+	}
+	return recovery.Code, nil
 }

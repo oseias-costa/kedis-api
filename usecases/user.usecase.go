@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"main/domain"
 	"main/infra/repository"
+	"math/rand"
 	"net/mail"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/resend/resend-go/v2"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -22,6 +24,8 @@ type UserUseCaseInterface interface {
 	CreateUserUseCase(user domain.User) (domain.User, error)
 	LoginUseCase(l domain.Login) (string, error)
 	GetUser(id string) (domain.UserResponse, error)
+	SendPasswordRecovery() (bool, error)
+	VerifyPasswordRecoveryCode(email, code string) (bool, error)
 }
 
 type userUseCase struct{}
@@ -87,6 +91,29 @@ func (*userUseCase) GetUser(id string) (domain.UserResponse, error) {
 	}
 
 	return u, nil
+}
+
+func (*userUseCase) SendPasswordRecovery() (bool, error) {
+	client := resend.NewClient(os.Getenv("APIKEY"))
+	code := fmt.Sprintf("<h1>Recuperar a Senha, código: %s</h1>", rand.Intn(10000))
+
+	params := &resend.SendEmailRequest{
+		From:    "não-responda@kedis.com.br",
+		To:      []string{"oseiasc2@gmail.com"},
+		Subject: "Recuperação de Senha",
+		Html:    code,
+	}
+
+	_, err := client.Emails.Send(params)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (*userUseCase) VerifyPasswordRecoveryCode(email, code string) (bool, error) {
+
 }
 
 func GenerateToken(u string) (string, error) {

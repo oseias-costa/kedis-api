@@ -20,3 +20,9 @@ type Login struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type RecoveryPassword struct {
+	Id    string `json:"id"`
+	Email string `json:"email"`
+	Code  string `json:"code"`
+}
