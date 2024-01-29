@@ -14,3 +14,5 @@ require (
 )
 
 require github.com/golang-jwt/jwt/v5 v5.2.0
+
+require github.com/resend/resend-go/v2 v2.4.0 // indirect
