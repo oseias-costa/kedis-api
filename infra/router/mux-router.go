@@ -21,17 +21,17 @@ func (*muxRouter) SERVE(port string) {
 }
 
 func (*muxRouter) GET(path string, handler func(http.ResponseWriter, *http.Request)) {
-	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodGet)
+	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodGet, http.MethodOptions)
 }
 
 func (*muxRouter) POST(path string, handler func(http.ResponseWriter, *http.Request)) {
-	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodPost)
+	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodPost, http.MethodOptions)
 }
 
 func (*muxRouter) PUT(path string, handler func(http.ResponseWriter, *http.Request)) {
-	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodPut)
+	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodPut, http.MethodOptions)
 }
 
 func (*muxRouter) DELETE(path string, handler func(http.ResponseWriter, *http.Request)) {
-	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodDelete)
+	muxDispatcher.HandleFunc(path, handler).Methods(http.MethodDelete, http.MethodOptions)
 }
