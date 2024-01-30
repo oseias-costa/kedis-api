@@ -24,9 +24,14 @@ type Login struct {
 type RecoveryPassword struct {
 	Id    string `json:"id"`
 	Email string `json:"email"`
-	Code  string `json:"code"`
+	Code  int    `json:"code"`
 }
 
 type Email struct {
 	Email string `json:"email"`
+}
+
+type VerifyCode struct {
+	Email string `json:"email"`
+	Code  int    `json:"code"`
 }

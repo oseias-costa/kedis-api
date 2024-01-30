@@ -11,10 +11,11 @@ type UserRepositoryInterface interface {
 	CreateUserRepo(user domain.User) (domain.User, error)
 	LoginUserRepo(l domain.Login) (domain.User, error)
 	GetUserRepo(id string) (domain.UserResponse, error)
-	SendPasswordRecovery(id, email, code string) (bool, error)
-	VerifyCodeRepository(email string) (string, error)
+	SendPasswordRecovery(id string, email string, code int) (bool, error)
+	VerifyCodeRepository(email string) (int, error)
 	UpdatePasswordRepository(email, newPassword string) (bool, error)
 	EmailIsValid(email string) error
+	RemoveCode(email string) error
 }
 
 type userRepo struct{}
@@ -102,7 +103,7 @@ func (*userRepo) GetUserRepo(id string) (domain.UserResponse, error) {
 	return user, nil
 }
 
-func (*userRepo) SendPasswordRecovery(id, email, code string) (bool, error) {
+func (*userRepo) SendPasswordRecovery(id string, email string, code int) (bool, error) {
 	c := persistence.Connect()
 	stmt, err := c.Prepare(`INSERT INTO recoveryPassword (id, email, code) VALUES (?,?,?)`)
 	if err != nil {
@@ -116,12 +117,12 @@ func (*userRepo) SendPasswordRecovery(id, email, code string) (bool, error) {
 	return true, nil
 }
 
-func (*userRepo) VerifyCodeRepository(email string) (string, error) {
+func (*userRepo) VerifyCodeRepository(email string) (int, error) {
 	c := persistence.Connect()
 
 	res, err := c.Query("SELECT * FROM recoveryPassword WHERE email = ?", email)
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	var recovery domain.RecoveryPassword
@@ -133,7 +134,7 @@ func (*userRepo) VerifyCodeRepository(email string) (string, error) {
 			&recovery.Code,
 		)
 		if err != nil {
-			return "", err
+			return 0, err
 		}
 	}
 	return recovery.Code, nil
@@ -142,7 +143,12 @@ func (*userRepo) VerifyCodeRepository(email string) (string, error) {
 func (*userRepo) UpdatePasswordRepository(email, newPassword string) (bool, error) {
 	c := persistence.Connect()
 
-	_, err := c.Prepare(`UPDATE user SET password = ? WHERE email = ?`)
+	stmt, err := c.Prepare(`UPDATE user SET password = ? WHERE email = ?`)
+	if err != nil {
+		return false, err
+	}
+
+	_, err = stmt.Exec(newPassword, email)
 	if err != nil {
 		return false, err
 	}
@@ -159,5 +165,16 @@ func (*userRepo) EmailIsValid(email string) error {
 	}
 
 	fmt.Println("email is valid \n", res)
+	return nil
+}
+
+func (*userRepo) RemoveCode(email string) error {
+	c := persistence.Connect()
+
+	_, err := c.Query(`DELETE FROM recoveryPassword WHERE email = ?`, email)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
