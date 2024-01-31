@@ -100,14 +100,16 @@ func (*userController) SendRecoveryCode(w http.ResponseWriter, r *http.Request) 
 	var body domain.Email
 	errE := json.NewDecoder(r.Body).Decode(&body)
 	if errE != nil {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(`{"error": "Error Encoder json"}`))
+		return
 	}
 
 	_, err := userUseCase.SendPasswordRecovery(body.Email)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprint(err)))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -126,14 +128,16 @@ func (*userController) VerifyRecoveryCode(w http.ResponseWriter, r *http.Request
 
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(`{"error": "Error Encoder"}`))
+		return
 	}
 
 	res, errVerify := userUseCase.VerifyPasswordRecoveryCode(body.Email, body.Code)
 	if errVerify != nil {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(errVerify.Error()))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -154,12 +158,14 @@ func (*userController) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadGateway)
 		w.Write([]byte(`{"error": "Error Encoder"}`))
+		return
 	}
 
 	res, errUpdate := userUseCase.UpdatePassword(update.Email, update.Password)
 	if errUpdate != nil {
 		w.WriteHeader(http.StatusBadGateway)
 		w.Write([]byte(errUpdate.Error()))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
