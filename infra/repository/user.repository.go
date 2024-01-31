@@ -157,14 +157,31 @@ func (*userRepo) UpdatePasswordRepository(email, newPassword string) (bool, erro
 }
 
 func (*userRepo) EmailIsValid(email string) error {
+	var user domain.UserResponse
 	c := persistence.Connect()
 
-	res, err := c.Query(`SELECT * FROM user WHERE email = ?`, email)
+	r, err := c.Query(`SELECT * FROM user WHERE email = ?`, email)
 	if err != nil {
-		return errors.New(`{"error": "Email is invalid"`)
+		return err
 	}
 
-	fmt.Println("email is valid \n", res)
+	for r.Next() {
+		err := r.Scan(
+			&user.ID,
+			&user.FirstName,
+			&user.LastName,
+			&user.Email,
+			&user.Password,
+		)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	if user.ID == "" {
+		return errors.New(`{"error": "Email is invalid"}`)
+	}
 	return nil
 }
 
