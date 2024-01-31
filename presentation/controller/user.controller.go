@@ -3,8 +3,8 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"main/domain"
+	"main/presentation/middlewares"
 	"main/usecases"
 	"net/http"
 )
@@ -77,10 +77,9 @@ func (*userController) LoginUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*userController) GetUser(w http.ResponseWriter, r *http.Request) {
-	b, _ := io.ReadAll(r.Body)
-	defer r.Body.Close()
+	u := middlewares.GetUserId(w, r)
 
-	user, err := userUseCase.GetUser(string(b))
+	user, err := userUseCase.GetUser(u)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprint(err)))
@@ -165,4 +164,13 @@ func (*userController) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(res))
+}
+
+func setHeaders(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 }
