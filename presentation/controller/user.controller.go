@@ -46,10 +46,9 @@ func (*userController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprint(err)))
 	}
-	fmt.Println("return controller", u)
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
+	w.Write([]byte(u))
 }
 
 func (*userController) LoginUser(w http.ResponseWriter, r *http.Request) {

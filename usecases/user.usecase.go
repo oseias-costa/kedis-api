@@ -21,7 +21,7 @@ type Claims struct {
 }
 
 type UserUseCaseInterface interface {
-	CreateUserUseCase(user domain.User) (domain.User, error)
+	CreateUserUseCase(user domain.User) (string, error)
 	LoginUseCase(l domain.Login) (string, error)
 	GetUser(id string) (domain.UserResponse, error)
 	SendPasswordRecovery(email string) (bool, error)
@@ -37,32 +37,37 @@ func NewUserUseCase() UserUseCaseInterface {
 	return &userUseCase{}
 }
 
-func (*userUseCase) CreateUserUseCase(user domain.User) (domain.User, error) {
+func (*userUseCase) CreateUserUseCase(user domain.User) (string, error) {
 	id, errUiid := uuid.NewRandom()
 	if errUiid != nil {
-		return user, errUiid
+		return "", errUiid
 	}
 	user.ID = id.String()
 
 	_, err := verifyUser(user)
 	if err != nil {
-		return user, err
+		return "", err
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 	if err != nil {
-		return user, err
+		return "", err
 	}
 	user.Password = string(hash)
 
-	u, err := repo.CreateUserRepo(user)
+	_, err = repo.CreateUserRepo(user)
 	if err != nil {
-		return user, err
+		return "", err
 	}
 
-	fmt.Printf("test %v", u)
+	token, err := GenerateToken(id.String())
+	if err != nil {
+		return "", err
+	}
 
-	return user, nil
+	sendToken := fmt.Sprintf(`{"token": "%s"}`, token)
+
+	return sendToken, nil
 }
 
 func (*userUseCase) LoginUseCase(l domain.Login) (string, error) {
@@ -211,9 +216,21 @@ func verifyUser(user domain.User) (bool, error) {
 		return false, errors.New("Name is required")
 	}
 
+	if user.LastName == "" {
+		return false, errors.New("LastName is required")
+	}
+
+	if user.Email == "" {
+		return false, errors.New("Email is required")
+	}
+
 	_, err := mail.ParseAddress(user.Email)
 	if err != nil {
 		return false, errors.New("Email is not valid")
+	}
+
+	if user.Password == "" {
+		return false, errors.New("Password is required")
 	}
 
 	return true, nil
