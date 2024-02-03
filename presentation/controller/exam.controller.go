@@ -23,6 +23,11 @@ func NewExamController(u usecases.ExamUseCase) ExamController {
 }
 
 func (*examController) GetExam(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	var exam domain.ExamReq
 	id := middlewares.GetUserId(w, r)
 

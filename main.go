@@ -37,7 +37,7 @@ func main() {
 	httpRouter.POST("/updatepassword", userController.UpdatePassword)
 
 	httpRouter.POST("/result", middlewares.Auth(resultController.CreateResults))
-	httpRouter.GET("/exam", middlewares.Auth(examController.GetExam))
+	httpRouter.POST("/exam", middlewares.Auth(examController.GetExam))
 
 	httpRouter.SERVE(os.Getenv("PORT"))
 }

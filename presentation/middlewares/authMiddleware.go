@@ -9,8 +9,6 @@ import (
 func Auth(handlerFunc http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Access-Control-Allow-Origin", "*")
-		w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
 			return
