@@ -20,7 +20,7 @@ func NewResultRepo() ResultRepository {
 func (*resultRepo) CreateResultRepo(r domain.Result) error {
 	c := persistence.Connect()
 
-	sql := "INSERT INTO results (id, userId, cloud, mockExam, result, wrong, correct) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	sql := "INSERT INTO results (id, userId, date, cloud, mockExam, result, wrong, correct) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 
 	stmt, err := c.Prepare(sql)
 	if err != nil {
@@ -28,7 +28,7 @@ func (*resultRepo) CreateResultRepo(r domain.Result) error {
 	}
 	//stmt.Close()
 
-	res, err := stmt.Exec(r.Id, r.UserId, r.Cloud, r.MockExam, r.Result, r.Wrong, r.Correct)
+	res, err := stmt.Exec(r.Id, r.UserId, r.Date, r.Cloud, r.MockExam, r.Result, r.Wrong, r.Correct)
 	if err != nil {
 		return err
 	}

@@ -1,8 +1,10 @@
 package usecases
 
 import (
+	"fmt"
 	"main/domain"
 	"main/infra/repository"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -26,6 +28,9 @@ func (*resultUseCase) CreateResult(result domain.Result) (bool, error) {
 		return false, errUiid
 	}
 	result.Id = id.String()
+	now := time.Now()
+	y, d, m := now.Date()
+	result.Date = fmt.Sprintf("%d/%d/%d", d, int(m), y)
 
 	err := repoResult.CreateResultRepo(result)
 	if err != nil {

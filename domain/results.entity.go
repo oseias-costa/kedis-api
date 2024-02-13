@@ -3,6 +3,7 @@ package domain
 type Result struct {
 	Id       string         `json:"id"`
 	UserId   string         `json:"userId"`
+	Date     string         `json:"date"`
 	Cloud    string         `json:"cloud"`
 	MockExam string         `json:"mockExam"`
 	Result   float64        `json:"result"`
