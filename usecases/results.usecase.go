@@ -29,7 +29,7 @@ func (*resultUseCase) CreateResult(result domain.Result) (bool, error) {
 	}
 	result.Id = id.String()
 	now := time.Now()
-	y, d, m := now.Date()
+	y, m, d := now.Date()
 	result.Date = fmt.Sprintf("%d/%d/%d", d, int(m), y)
 
 	err := repoResult.CreateResultRepo(result)

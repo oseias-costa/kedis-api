@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"main/domain"
+	"main/presentation/middlewares"
 	"main/usecases"
 	"net/http"
 )
@@ -22,12 +23,15 @@ func NewResultController(usecase usecases.ResultUsecase) ResultController {
 }
 
 func (*resultController) CreateResults(w http.ResponseWriter, r *http.Request) {
+	id := middlewares.GetUserId(w, r)
 	var result domain.Result
 	err := json.NewDecoder(r.Body).Decode(&result)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(`{"error": "result not decoded"}`))
 	}
+	result.UserId = id
+	fmt.Println("esse é o id do auto", id)
 
 	u, err := resultUseCase.CreateResult(result)
 	if err != nil {
