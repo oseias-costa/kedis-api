@@ -7,12 +7,15 @@ import (
 	"main/presentation/middlewares"
 	"main/usecases"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 var resultUseCase usecases.ResultUsecase
 
 type ResultController interface {
 	CreateResults(w http.ResponseWriter, r *http.Request)
+	GetResultById(w http.ResponseWriter, r *http.Request)
 }
 
 type resultController struct{}
@@ -42,4 +45,21 @@ func (*resultController) CreateResults(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(result)
+}
+
+func (*resultController) GetResultById(w http.ResponseWriter, r *http.Request) {
+	resultId := mux.Vars(r)["resultId"]
+	if resultId == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error": "resultId invalid"}`))
+	}
+
+	r, err := resultUseCase.GetResultById(resultId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprint(err)))
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(r)
 }

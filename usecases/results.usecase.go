@@ -12,7 +12,8 @@ import (
 var repoResult repository.ResultRepository
 
 type ResultUsecase interface {
-	CreateResult(result domain.Result) (bool, error)
+	CreateResult(result domain.Result) (string, error)
+	GetResultById(resultId string) (*domain.Result, error)
 }
 
 type resultUseCase struct{}
@@ -22,10 +23,10 @@ func NewResultUseCase(repo repository.ResultRepository) ResultUsecase {
 	return &resultUseCase{}
 }
 
-func (*resultUseCase) CreateResult(result domain.Result) (bool, error) {
+func (*resultUseCase) CreateResult(result domain.Result) (string, error) {
 	id, errUiid := uuid.NewRandom()
 	if errUiid != nil {
-		return false, errUiid
+		return "", errUiid
 	}
 	result.Id = id.String()
 	now := time.Now()
@@ -34,15 +35,17 @@ func (*resultUseCase) CreateResult(result domain.Result) (bool, error) {
 
 	err := repoResult.CreateResultRepo(result)
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
 	_, errWA := CreateWrogAnswer(result.Id, result.Details)
 	if errWA != nil {
-		return false, err
+		return "", err
 	}
 
-	return true, nil
+	resultId := fmt.Sprintf(`{"resultId": %s}`, id)
+
+	return resultId, nil
 }
 
 func CreateWrogAnswer(resultId string, wrongAnswers []domain.WrongAnswers) (bool, error) {
@@ -60,4 +63,13 @@ func CreateWrogAnswer(resultId string, wrongAnswers []domain.WrongAnswers) (bool
 		}
 	}
 	return true, nil
+}
+
+func (*resultUseCase) GetResultById(resultId string) (*domain.Result, error) {
+	r, err := repoResult.GetResultRepo(resultId)
+	if err != nil {
+		return &r, err
+	}
+
+	return &r, err
 }

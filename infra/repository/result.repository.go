@@ -9,6 +9,7 @@ import (
 type ResultRepository interface {
 	CreateResultRepo(r domain.Result) error
 	CreateWrongAnswerRepo(r domain.WrongAnswers) error
+	GetResultRepo(resultId string) (domain.Result, error)
 }
 
 type resultRepo struct{}
@@ -55,4 +56,32 @@ func (*resultRepo) CreateWrongAnswerRepo(w domain.WrongAnswers) error {
 	fmt.Println("res no create ResultRepo", res)
 
 	return nil
+}
+
+func (*resultRepo) GetResultRepo(resultId string) (domain.Result, error) {
+	var result domain.Result
+	c := persistence.Connect()
+
+	r, err := c.Query("SELECT * FROM results WHERE id = ?", resultId)
+	if err != nil {
+		return result, err
+	}
+
+	for r.Next() {
+		err := r.Scan(
+			&result.Id,
+			&result.UserId,
+			&result.Date,
+			&result.Cloud,
+			&result.Result,
+			&result.Wrong,
+			&result.Correct,
+			&result.MockExam,
+		)
+		if err != nil {
+			return result, err
+		}
+	}
+
+	return result, nil
 }
