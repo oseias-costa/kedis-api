@@ -38,6 +38,7 @@ func main() {
 
 	httpRouter.POST("/result", middlewares.Auth(resultController.CreateResults))
 	httpRouter.POST("/exam", middlewares.Auth(examController.GetExam))
+	httpRouter.GET("/result/{resultId}", middlewares.Auth(resultController.GetResultById))
 
 	httpRouter.SERVE(os.Getenv("PORT"))
 }

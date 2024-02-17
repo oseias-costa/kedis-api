@@ -82,6 +82,8 @@ func (*resultRepo) GetResultRepo(resultId string) (domain.Result, error) {
 			return result, err
 		}
 	}
+	defer c.Close()
+	defer r.Close()
 
 	return result, nil
 }

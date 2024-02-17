@@ -54,12 +54,12 @@ func (*resultController) GetResultById(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error": "resultId invalid"}`))
 	}
 
-	r, err := resultUseCase.GetResultById(resultId)
+	result, err := resultUseCase.GetResultById(resultId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprint(err)))
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(r)
+	json.NewEncoder(w).Encode(result)
 }

@@ -13,7 +13,7 @@ var repoResult repository.ResultRepository
 
 type ResultUsecase interface {
 	CreateResult(result domain.Result) (string, error)
-	GetResultById(resultId string) (*domain.Result, error)
+	GetResultById(resultId string) (domain.Result, error)
 }
 
 type resultUseCase struct{}
@@ -65,11 +65,11 @@ func CreateWrogAnswer(resultId string, wrongAnswers []domain.WrongAnswers) (bool
 	return true, nil
 }
 
-func (*resultUseCase) GetResultById(resultId string) (*domain.Result, error) {
+func (*resultUseCase) GetResultById(resultId string) (domain.Result, error) {
 	r, err := repoResult.GetResultRepo(resultId)
 	if err != nil {
-		return &r, err
+		return r, err
 	}
 
-	return &r, err
+	return r, err
 }
