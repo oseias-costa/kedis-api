@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"main/domain"
 	"main/presentation/middlewares"
 	"main/usecases"
@@ -34,17 +33,15 @@ func (*resultController) CreateResults(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error": "result not decoded"}`))
 	}
 	result.UserId = id
-	fmt.Println("esse é o id do auto", id)
 
 	u, err := resultUseCase.CreateResult(result)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprint(err)))
+		w.Write([]byte(err.Error()))
 	}
-	fmt.Println("return controller CreateResults", u)
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(result)
+	json.NewEncoder(w).Encode(u)
 }
 
 func (*resultController) GetResultById(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +54,7 @@ func (*resultController) GetResultById(w http.ResponseWriter, r *http.Request) {
 	result, err := resultUseCase.GetResultById(resultId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprint(err)))
+		w.Write([]byte(err.Error()))
 	}
 
 	w.WriteHeader(http.StatusOK)

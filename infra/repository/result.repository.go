@@ -33,7 +33,7 @@ func (*resultRepo) CreateResultRepo(r domain.Result) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("res no create ResultRepo", res)
+	fmt.Println(res)
 
 	return nil
 }
@@ -53,7 +53,7 @@ func (*resultRepo) CreateWrongAnswerRepo(w domain.WrongAnswers) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("res no create ResultRepo", res)
+	fmt.Println(res)
 
 	return nil
 }
